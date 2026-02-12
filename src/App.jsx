@@ -69,11 +69,21 @@ function App() {
     }
   }, [currentIndex, loading, lines.length, fetchLines])
 
-  const swipeBtn = (dir) => {
+  const swipeBtn = useCallback((dir) => {
     if (currentIndex >= 0 && currentIndex < lines.length && cardRefs.current[currentIndex]) {
       cardRefs.current[currentIndex].swipe(dir)
     }
-  }
+  }, [currentIndex, lines.length])
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (view !== 'swipe') return
+      if (e.key === 'ArrowLeft') swipeBtn('left')
+      if (e.key === 'ArrowRight') swipeBtn('right')
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [view, swipeBtn])
 
   const copyLine = () => {
     if (currentIndex >= 0 && currentIndex < lines.length) {
